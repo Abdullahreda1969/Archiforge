@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "archiforge"
+version = "0.4.0"
+description = "The Master Builder's CLI companion"
+dependencies = [
+    "click",
+    "pyyaml",
+    "google-generativeai",
+    "rich"
+]
+
+[tool.setuptools]
+# هنا نخبر بايثون أن يركز فقط على مجلد الكود البرمجي
+packages = ["archiforge", "archiforge.core"]
+
+[project.scripts]
+archiforge = "archiforge.cli:cli"
