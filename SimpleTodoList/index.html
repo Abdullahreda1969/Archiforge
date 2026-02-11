@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق قائمة المهام</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 90vh;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+        .input-section {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        #todo-input {
+            flex-grow: 1;
+            padding: 12px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        #add-button {
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s ease;
+        }
+        #add-button:hover {
+            background-color: #0056b3;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background: #f9f9f9;
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #eee;
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+        }
+        li:hover {
+            background-color: #f0f0f0;
+        }
+        li.completed {
+            text-decoration: line-through;
+            color: #888;
+            background-color: #e6ffe6;
+            border-color: #d4edda;
+        }
+        li button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+        li button:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>قائمة المهام</h1>
+        <div class="input-section">
+            <input type="text" id="todo-input" placeholder="أضف مهمة جديدة...">
+            <button id="add-button">إضافة</button>
+        </div>
+        <ul id="todo-list">
+            <!-- المهام ستضاف هنا بواسطة JavaScript -->
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const todoInput = document.getElementById('todo-input');
+            const addButton = document.getElementById('add-button');
+            const todoList = document.getElementById('todo-list');
+
+            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+            function renderTasks() {
+                todoList.innerHTML = '';
+                tasks.forEach((task, index) => {
+                    const li = document.createElement('li');
+                    li.textContent = task.text;
+                    if (task.completed) {
+                        li.classList.add('completed');
+                    }
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'حذف';
+                    deleteButton.onclick = (e) => {
+                        e.stopPropagation(); // منع تبديل حالة الاكتمال عند النقر على زر الحذف
+                        deleteTask(index);
+                    };
+
+                    li.onclick = () => toggleComplete(index);
+
+                    li.appendChild(deleteButton);
+                    todoList.appendChild(li);
+                });
+                saveTasks();
+            }
+
+            function addTask() {
+                const taskText = todoInput.value.trim();
+                if (taskText !== '') {
+                    tasks.push({ text: taskText, completed: false });
+                    todoInput.value = '';
+                    renderTasks();
+                }
+            }
+
+            function deleteTask(index) {
+                tasks.splice(index, 1);
+                renderTasks();
+            }
+
+            function toggleComplete(index) {
+                tasks[index].completed = !tasks[index].completed;
+                renderTasks();
+            }
+
+            function saveTasks() {
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+            }
+
+            addButton.addEventListener('click', addTask);
+            todoInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    addTask();
+                }
+            });
+
+            renderTasks();
+        });
+    </script>
+</body>
+</html>
